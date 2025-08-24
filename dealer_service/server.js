@@ -7,16 +7,16 @@ app.use(cors()); // Enable CORS
 
 const dealerPricing = {
   1: [
-    { dealer: "Dealer A", price: 500 },
-    { dealer: "Dealer B", price: 550 }
+    { dealer: "BestTech Store", price: 500 },
+    { dealer: "Laptop World", price: 550 }
   ],
   2: [
-    { dealer: "Dealer C", price: 300 },
-    { dealer: "Dealer D", price: 320 }
+    { dealer: "Mobile Hub", price: 300 },
+    { dealer: "Smartphone Center", price: 320 }
   ],
   3: [
-    { dealer: "Dealer E", price: 200 },
-    { dealer: "Dealer F", price: 220 }
+    { dealer: "Tablet Express", price: 200 },
+    { dealer: "Gadget Planet", price: 220 }
   ]
 };
 
