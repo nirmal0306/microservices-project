@@ -24,11 +24,12 @@
     const productAPI = "https://product-service-4lwd.onrender.com/products";
     const pricingAPI = "https://dealer-service-o0ej.onrender.com/pricing/"; // trailing slash
 
+    let currentDealers = []; // store current product's dealers
+
     async function loadProducts() {
       let res = await fetch(productAPI);
       let products = await res.json();
       let productSelect = document.getElementById("products");
-      // Remove all but the first default option
       productSelect.innerHTML = '<option value="" disabled selected>Select Product</option>';
 
       products.forEach(p => {
@@ -37,18 +38,19 @@
         option.textContent = p.name;
         productSelect.appendChild(option);
       });
-      // Reset dealers dropdown
+
       resetDealers();
     }
 
     async function loadDealers() {
       let productId = document.getElementById("products").value;
-      if (!productId) return; // no product selected
+      if (!productId) return;
 
       let res = await fetch(pricingAPI + productId);
       let dealers = await res.json();
-      let dealerSelect = document.getElementById("dealers");
+      currentDealers = dealers; // save for "All Dealers"
 
+      let dealerSelect = document.getElementById("dealers");
       dealerSelect.innerHTML = '<option value="" disabled selected>Select Dealer</option>';
 
       dealers.forEach(d => {
@@ -57,23 +59,39 @@
         option.textContent = d.dealer;
         dealerSelect.appendChild(option);
       });
+
+      // Add "All Dealers" option
+      if (dealers.length > 1) {
+        let allOption = document.createElement("option");
+        allOption.value = "all";
+        allOption.textContent = "All Dealers";
+        dealerSelect.appendChild(allOption);
+      }
+
       showPrice();
+    }
+
+    function showPrice() {
+      let dealerSelect = document.getElementById("dealers");
+      let selectedValue = dealerSelect.value;
+      let priceElement = document.getElementById("price");
+
+      if (!selectedValue) {
+        priceElement.innerText = "";
+      } else if (selectedValue === "all") {
+        // show all dealers and prices
+        let allPrices = currentDealers.map(d => `${d.dealer}: $${d.price}`).join("\n");
+        priceElement.innerText = allPrices;
+      } else {
+        priceElement.innerText = "Price: $" + selectedValue;
+      }
     }
 
     function resetDealers() {
       let dealerSelect = document.getElementById("dealers");
       dealerSelect.innerHTML = '<option value="" disabled selected>Select Dealer</option>';
       document.getElementById("price").innerText = "";
-    }
-
-    function showPrice() {
-      let dealerSelect = document.getElementById("dealers");
-      let selectedPrice = dealerSelect.value;
-      if (!selectedPrice) {
-        document.getElementById("price").innerText = "";
-      } else {
-        document.getElementById("price").innerText = "Price: $" + selectedPrice;
-      }
+      currentDealers = [];
     }
 
     document.getElementById("products").addEventListener("change", loadDealers);
