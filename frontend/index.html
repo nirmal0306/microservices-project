@@ -7,40 +7,50 @@
   <h1>Dealer Evaluation</h1>
 
   <label for="products">Select Product:</label>
-  <select id="products"></select>
+  <select id="products">
+    <option value="" disabled selected>Select Product</option>
+  </select>
 
   <br><br>
 
   <label for="dealers">Select Dealer:</label>
-  <select id="dealers"></select>
+  <select id="dealers">
+    <option value="" disabled selected>Select Dealer</option>
+  </select>
 
   <h3 id="price"></h3>
 
   <script>
-    // Replace these URLs with your actual Render URLs
     const productAPI = "https://product-service-4lwd.onrender.com/products";
-    const pricingAPI = "https://dealer-service-o0ej.onrender.com/pricing/"; // <-- trailing slash fixed
+    const pricingAPI = "https://dealer-service-o0ej.onrender.com/pricing/"; // trailing slash
 
     async function loadProducts() {
       let res = await fetch(productAPI);
       let products = await res.json();
       let productSelect = document.getElementById("products");
-      productSelect.innerHTML = "";
+      // Remove all but the first default option
+      productSelect.innerHTML = '<option value="" disabled selected>Select Product</option>';
+
       products.forEach(p => {
         let option = document.createElement("option");
         option.value = p.id;
         option.textContent = p.name;
         productSelect.appendChild(option);
       });
-      loadDealers();
+      // Reset dealers dropdown
+      resetDealers();
     }
 
     async function loadDealers() {
       let productId = document.getElementById("products").value;
-      let res = await fetch(pricingAPI + productId); // now fetches correct endpoint
+      if (!productId) return; // no product selected
+
+      let res = await fetch(pricingAPI + productId);
       let dealers = await res.json();
       let dealerSelect = document.getElementById("dealers");
-      dealerSelect.innerHTML = "";
+
+      dealerSelect.innerHTML = '<option value="" disabled selected>Select Dealer</option>';
+
       dealers.forEach(d => {
         let option = document.createElement("option");
         option.value = d.price;
@@ -50,10 +60,20 @@
       showPrice();
     }
 
+    function resetDealers() {
+      let dealerSelect = document.getElementById("dealers");
+      dealerSelect.innerHTML = '<option value="" disabled selected>Select Dealer</option>';
+      document.getElementById("price").innerText = "";
+    }
+
     function showPrice() {
       let dealerSelect = document.getElementById("dealers");
       let selectedPrice = dealerSelect.value;
-      document.getElementById("price").innerText = "Price: $" + selectedPrice;
+      if (!selectedPrice) {
+        document.getElementById("price").innerText = "";
+      } else {
+        document.getElementById("price").innerText = "Price: $" + selectedPrice;
+      }
     }
 
     document.getElementById("products").addEventListener("change", loadDealers);
