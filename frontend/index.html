@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dealer Evaluation</title>
+</head>
+<body>
+  <h1>Dealer Evaluation</h1>
+
+  <label for="products">Select Product:</label>
+  <select id="products"></select>
+
+  <br><br>
+
+  <label for="dealers">Select Dealer:</label>
+  <select id="dealers"></select>
+
+  <h3 id="price"></h3>
+
+  <script>
+    const productAPI = "YOUR_PYTHON_SERVICE_URL/products";
+    const pricingAPI = "YOUR_NODE_SERVICE_URL/pricing/";
+
+    async function loadProducts() {
+      let res = await fetch(productAPI);
+      let products = await res.json();
+      let productSelect = document.getElementById("products");
+      productSelect.innerHTML = "";
+      products.forEach(p => {
+        let option = document.createElement("option");
+        option.value = p.id;
+        option.textContent = p.name;
+        productSelect.appendChild(option);
+      });
+      loadDealers();
+    }
+
+    async function loadDealers() {
+      let productId = document.getElementById("products").value;
+      let res = await fetch(pricingAPI + productId);
+      let dealers = await res.json();
+      let dealerSelect = document.getElementById("dealers");
+      dealerSelect.innerHTML = "";
+      dealers.forEach(d => {
+        let option = document.createElement("option");
+        option.value = d.price;
+        option.textContent = d.dealer;
+        dealerSelect.appendChild(option);
+      });
+      showPrice();
+    }
+
+    function showPrice() {
+      let dealerSelect = document.getElementById("dealers");
+      let selectedPrice = dealerSelect.value;
+      document.getElementById("price").innerText = "Price: $" + selectedPrice;
+    }
+
+    document.getElementById("products").addEventListener("change", loadDealers);
+    document.getElementById("dealers").addEventListener("change", showPrice);
+
+    loadProducts();
+  </script>
+</body>
+</html>
