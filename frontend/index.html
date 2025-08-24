@@ -18,7 +18,7 @@
     <option value="" disabled selected>Select Dealer</option>
   </select>
 
-  <h3 id="price"></h3>
+  <pre id="price"></pre> <!-- Using <pre> so multiple lines show nicely -->
 
   <script>
     const productAPI = "https://product-service-4lwd.onrender.com/products";
@@ -48,7 +48,7 @@
 
       let res = await fetch(pricingAPI + productId);
       let dealers = await res.json();
-      currentDealers = dealers; // save for "All Dealers"
+      currentDealers = dealers;
 
       let dealerSelect = document.getElementById("dealers");
       dealerSelect.innerHTML = '<option value="" disabled selected>Select Dealer</option>';
@@ -60,7 +60,7 @@
         dealerSelect.appendChild(option);
       });
 
-      // Add "All Dealers" option
+      // Add "All Dealers" option if more than one dealer
       if (dealers.length > 1) {
         let allOption = document.createElement("option");
         allOption.value = "all";
@@ -79,11 +79,13 @@
       if (!selectedValue) {
         priceElement.innerText = "";
       } else if (selectedValue === "all") {
-        // show all dealers and prices
+        // Show all dealers with their prices
         let allPrices = currentDealers.map(d => `${d.dealer}: $${d.price}`).join("\n");
         priceElement.innerText = allPrices;
       } else {
-        priceElement.innerText = "Price: $" + selectedValue;
+        // Show selected dealer name and price
+        let dealerName = dealerSelect.options[dealerSelect.selectedIndex].text;
+        priceElement.innerText = `${dealerName}: $${selectedValue}`;
       }
     }
 
