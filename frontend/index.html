@@ -17,8 +17,9 @@
   <h3 id="price"></h3>
 
   <script>
+    // Replace these URLs with your actual Render URLs
     const productAPI = "https://product-service-4lwd.onrender.com/products";
-    const pricingAPI = "https://dealer-service-47xp.onrender.com/pricing";
+    const pricingAPI = "https://dealer-service-o0ej.onrender.com/pricing/"; // <-- trailing slash fixed
 
     async function loadProducts() {
       let res = await fetch(productAPI);
@@ -36,7 +37,7 @@
 
     async function loadDealers() {
       let productId = document.getElementById("products").value;
-      let res = await fetch(pricingAPI + productId);
+      let res = await fetch(pricingAPI + productId); // now fetches correct endpoint
       let dealers = await res.json();
       let dealerSelect = document.getElementById("dealers");
       dealerSelect.innerHTML = "";
